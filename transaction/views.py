@@ -7,11 +7,19 @@ from rest_framework import status
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
+from drf_yasg.utils import swagger_auto_schema
 
 from customer.models import Customer
 from .models import Transactions
+from .swagger import transaction_amount_request_body, transaction_response_body, \
+    history_response_body, authorization_header
 
 
+@swagger_auto_schema(method='post',
+                     request_body=transaction_amount_request_body,
+                     responses={201:transaction_response_body, 400:"Bad Request"},
+                     manual_parameters=[authorization_header],
+                     operation_description="Deposit mentioned amount into the customer(phone) account")
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def deposit(request, phone):
@@ -37,6 +45,12 @@ def deposit(request, phone):
                         status=status.HTTP_201_CREATED)
 
     return HttpResponse("Unacceptable amount", status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='post',
+                     request_body=transaction_amount_request_body,
+                     responses={201:transaction_response_body, 400:"Bad Request"},
+                     manual_parameters=[authorization_header],
+                     operation_description="Withdraw mentioned amount from the customer(phone) account")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -64,6 +78,12 @@ def withdraw(request, phone):
                         status=status.HTTP_201_CREATED)
 
     return HttpResponse("Unacceptable amount", status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='post',
+                     request_body=transaction_amount_request_body,
+                     responses={201:transaction_response_body, 400:"Bad Request",},
+                     manual_parameters=[authorization_header],
+                     operation_description="Transfer amount from a customer to another")
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -101,6 +121,11 @@ def transfer(request, from_phone, to_phone):
                         status=status.HTTP_201_CREATED)
 
     return HttpResponse("Unacceptable amount", status=status.HTTP_400_BAD_REQUEST)
+
+@swagger_auto_schema(method='get',
+                     responses={201:history_response_body, 400:"Bad Request"},
+                     manual_parameters=[authorization_header],
+                     operation_description="Show all transaction history for given customer")
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])

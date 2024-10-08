@@ -29,3 +29,10 @@ check_balance_response_201 = openapi.Schema(
     }
 )
 
+
+authorization_header = openapi.Parameter(
+    'Authorization',
+    in_=openapi.IN_HEADER,
+    description="Authorization token",
+    type=openapi.TYPE_STRING
+)
